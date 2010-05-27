@@ -1,0 +1,39 @@
+Deploy OLMIS to Heroku
+========================
+
+* Prerequsites - complete heroku one-off setup http://docs.heroku.com/quickstart#prerequisites
+
+* deploy an olmis to local box that MUST use git and MUST NOT use git submodules
+
+* cd to <application root>
+
+* create a .gems files to specify dependent gems
+fastercsv
+stringex
+ick
+nokogiri --version '= 1.4.1'
+
+* (Temp hack if Pacific NW sample data is installed) edit the generated app/models/usage_tally.rb and comment out (broken code anyway)
+ #    dimensions :vaccine => Product.vaccine
+ #  define_form_table :standard, [[:vaccine]], ...
+
+* git commit -m 'Heroku specific changes' -a
+
+* heroku create
+
+* git push heroku master
+
+* heroku rake db:migrate
+
+
+* (If you want the instance with minimal data), create minimal admin user 
+  (heroku rake olmis:db:bootstrap would have done the trick , except the implementation also creates some files on the fly, violating heroku's read-only file system constraint)
+  heroku console
+  User.create!( :username => 'admin1', :role => Role.find_by_code('admin'), :password => 'olmis', :password_confirmation => 'olmis', :language => 'en', :timezone => 'Pacific Time (US & Canada)' )
+
+
+* (If you want to replicate the local data to the remote instance) do the following: (local data must be in postgresql DB)
+  heroku db:push
+
+* (Optional) Rename the remot instance to a name you prefer
+  heroku rename <new-name>

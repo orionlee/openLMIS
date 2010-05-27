@@ -9,6 +9,9 @@ end
 
 ActionController::Base.append_view_path(File.dirname(__FILE__) + '/lib/views')
 
+# heroku compatibility (caching cannot be enabled due to read-only file systems) 
+ActionController::Base.perform_caching = false if ENV['HEROKU_UPID'] 
+
 require File.join(File.dirname(__FILE__), 'lib', 'dependencies.rb')
 
 Dir.glob(File.join(File.dirname(__FILE__), 'lib', 'mixins', '*.rb')) do |f|
